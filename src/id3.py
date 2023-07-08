@@ -124,7 +124,10 @@ class ID3:
 
         # Check if feature value found in branch tree
         if value not in tree[feature]:
-            return list(tree[feature].values())[0]
+            label = list(tree[feature].values())[0]
+            while isinstance(label, dict):
+                label = next(iter(label.values()))
+            return label
         
         # Get subtree
         subtree = tree[feature][value]
