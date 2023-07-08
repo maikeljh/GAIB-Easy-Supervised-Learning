@@ -118,7 +118,7 @@ class ID3:
         if isinstance(tree, str):
             return tree
 
-        # Get feature and value of node
+        # Get feature from node and feature value from row
         feature = list(tree.keys())[0]
         value = row[feature]
 
