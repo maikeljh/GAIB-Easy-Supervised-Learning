@@ -1,7 +1,7 @@
 import numpy as np
 
 class LogisticRegression:
-    def __init__(self, batch_size=100, epochs=1000, learning_rate=0.01):
+    def __init__(self, batch_size=100, epochs=1000, learning_rate=0.001):
         # Constructor
         self.batch_size = batch_size
         self.epochs = epochs
@@ -21,7 +21,7 @@ class LogisticRegression:
         losses = []
 
         # Training loop
-        for _ in range(self.epochs):
+        for epoch in range(self.epochs):
             # Iterate over batches
             for i in range((n_rows - 1) // self.batch_size + 1):
                 # Get start index and end index of current batch
@@ -50,10 +50,20 @@ class LogisticRegression:
             # Save loss
             losses.append(l)
 
+            # Print progress
+            if (epoch + 1) % 100 == 0:
+                print(f"Epoch: {epoch + 1}/{self.epochs}, Loss: {l:.4f}")
+
         # Output of train
         self.weights = weights
         self.bias = bias
         self.losses = losses
+
+        # Print training summary
+        print("Training completed.")
+        print(f"Total epochs: {self.epochs}")
+        print(f"Final loss: {l:.4f}")
+        print()
 
     def sigmoid(self, z):
         # Sigmoid function

@@ -14,7 +14,7 @@ def parse_arguments():
     parser.add_argument("--model", type=str, help="Specify the model")
     parser.add_argument("--data", type=str, help="Specify the data file")
     parser.add_argument("--k_nearest", type=int, help="Specify the value of k nearest neighbours for KNN model")
-    parser.add_argument("--lr", type=int, help="Specify the value of learning rate for logistic regression model")
+    parser.add_argument("--lr", type=float, help="Specify the value of learning rate for logistic regression model")
     parser.add_argument("--epochs", type=int, help="Specify the value of epochs for logistic regression model")
     return parser.parse_args()
 
@@ -56,9 +56,9 @@ def main():
     # Machine Learning
     # Model
     if args.model == "knn":
-        model = KNN(k=args.k_nearest)
+        model = KNN(k=3 if args.k_nearest is None else args.k_nearest)
     elif args.model == "log_reg":
-        model = LogisticRegression()
+        model = LogisticRegression(epochs=1000 if args.epochs is None else args.epochs, learning_rate=0.01 if args.lr is None else args.lr)
     elif args.model == "id_3":
         model = ID3()
     
