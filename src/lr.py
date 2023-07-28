@@ -1,7 +1,7 @@
 import numpy as np
 
 class LogisticRegression:
-    def __init__(self, batch_size=100, epochs=1000, learning_rate=0.001):
+    def __init__(self, batch_size=32, epochs=1000, learning_rate=0.1):
         # Constructor
         self.batch_size = batch_size
         self.epochs = epochs
@@ -15,22 +15,23 @@ class LogisticRegression:
         # Train model
         # Initialize variables
         n_rows, n_cols = self.X_train.shape
-        weights = np.zeros(n_cols)
+        weights = np.zeros((n_cols, 1))
         bias = 0
-        y = self.y_train.reshape(n_rows, 1)
+        self.y_train = self.y_train.reshape(n_rows, 1)
         losses = []
 
         # Training loop
         for epoch in range(self.epochs):
-            # Iterate over batches
-            for i in range((n_rows - 1) // self.batch_size + 1):
-                # Get start index and end index of current batch
-                start_i = i * self.batch_size
-                end_i = start_i + self.batch_size
+            # Shuffle the data before each epoch
+            indices = np.random.permutation(n_rows)
+            X_shuffled = self.X_train[indices]
+            y_shuffled = self.y_train[indices]
 
-                # Get features and labels of current batch
-                xb = self.X_train[start_i:end_i]
-                yb = self.y_train[start_i:end_i]
+            # Iterate over mini-batches
+            for i in range(0, n_rows, self.batch_size):
+                # Get features and labels of current mini-batch
+                xb = X_shuffled[i:i+self.batch_size]
+                yb = y_shuffled[i:i+self.batch_size]
 
                 # Calculate the predicted probabilities
                 y_hat = self.sigmoid(np.dot(xb, weights) + bias)
@@ -39,13 +40,13 @@ class LogisticRegression:
                 dw, db = self.gradients(xb, yb, y_hat)
 
                 # Update weights
-                weights -= self.learning_rate * dw.reshape(-1)
+                weights -= self.learning_rate * dw
 
                 # Update bias
                 bias -= self.learning_rate * db
 
             # Compute loss for current epoch
-            l = self.loss(y, self.sigmoid(np.dot(self.X_train, weights) + bias))
+            l = self.loss(self.y_train, self.sigmoid(np.dot(self.X_train, weights) + bias))
 
             # Save loss
             losses.append(l)
@@ -70,8 +71,8 @@ class LogisticRegression:
         return 1.0 / (1 + np.exp(-z))
 
     def loss(self, y, y_hat):
-        # Compute the logistic loss function
-        loss = -np.mean(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
+        # Loss Function
+        loss = -np.mean(y * (np.log(y_hat)) + (1 - y) * np.log(1 - y_hat))
         return loss
 
     def gradients(self, X, y, y_hat):
